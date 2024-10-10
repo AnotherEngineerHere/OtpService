@@ -1,15 +1,19 @@
 package com.example.demo.controller;
 
-import com.example.demo.services.OtpService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
-
 import java.util.Collections;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.models.OtpValidationRequest;
+import com.example.demo.services.OtpService;
+
+import reactor.core.publisher.Mono;
+
 @RestController
 @RequestMapping("/api/otp")
+@CrossOrigin(origins = "*")
 public class OtpController {
 
     private final OtpService otpService;
@@ -26,28 +30,13 @@ public class OtpController {
 
     @PostMapping("/validate")
     public Mono<ResponseEntity<Map<String, Boolean>>> validateOtp(@RequestBody OtpValidationRequest request) {
-        return otpService.validateOtp(request.getOtp(), request.getInputOtp())
-                .map(isValid -> ResponseEntity.ok(Collections.singletonMap("isValid", isValid)));
-    }
-
-    public static class OtpValidationRequest {
-        private String otp;
-        private String inputOtp;
-
-        public String getOtp() {
-            return otp;
+        try {
+            return otpService.validateOtp(request.getOtp(), request.getInputOtp())
+                    .map(isValid -> ResponseEntity.ok(Collections.singletonMap("isValid", isValid)));
+        } catch (Exception e) {
+            
+            e.printStackTrace();
         }
-
-        public void setOtp(String otp) {
-            this.otp = otp;
-        }
-
-        public String getInputOtp() {
-            return inputOtp;
-        }
-
-        public void setInputOtp(String inputOtp) {
-            this.inputOtp = inputOtp;
-        }
+        return null;
     }
 }
